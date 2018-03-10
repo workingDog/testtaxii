@@ -1,10 +1,7 @@
 import java.io.{BufferedWriter, File, FileWriter}
-import java.security.Security
-
 import com.kodekutters.stix._
 import com.kodekutters.taxii._
 import play.api.libs.json.Json
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
@@ -12,8 +9,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object TestApp {
 
   def main(args: Array[String]): Unit = {
-    // needed for (SSL) TLS-1.2 in https, requires jdk1.8.0_152
-    Security.setProperty("crypto.policy", "unlimited")
     // the collection endpoint
     val col = new Collection("34f8c42d-213a-480d-9046-0bd8a8f25680", "https://test.freetaxii.com:8000/osint/", "user", "psw")
     // get the objects from the server collection
