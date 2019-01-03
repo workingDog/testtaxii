@@ -1,6 +1,6 @@
 #### A simple test of the [taxii2Lib](https://github.com/workingDog/Taxii2LibScala) Scala library.
 
-Connects to the [freetaxii](https://github.com/freetaxii/freetaxii-server) TAXII-2 server and ask for STIX objects from a collection. 
+Connects to the "https://limo.anomali.com/api/v1/taxii2" TAXII-2 server and ask for the STIX objects from a collection. 
 The STIX objects are received in a bundle, 
 they are then extracted and written to file.
 
