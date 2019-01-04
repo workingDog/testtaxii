@@ -1,18 +1,20 @@
 import java.io.{BufferedWriter, File, FileWriter}
+//import java.security.Security
 
 import com.kodekutters.stix._
 import com.kodekutters.taxii._
-
 import play.api.libs.json.Json
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
 
 // tests
 object TestApp {
 
   def main(args: Array[String]): Unit = {
+    // for (SSL) TLS-1.2 in https
+    // Security.setProperty("crypto.policy", "unlimiteΩd")
     test1()
-    test2()
+  //  test2()
   }
 
   def test1(): Unit = {
@@ -21,18 +23,13 @@ object TestApp {
     // the server endpoint
     val server = Server("/taxii/", conn)
     // async discovery
-    server.discovery.map(d => println("\n---> discovery " + Json.prettyPrint(Json.toJson(d))))
+    server.discovery.map(d => println("\n---> test1 discovery " + Json.prettyPrint(Json.toJson(d))))
     // async api roots and collections
     server.apiRoots().map(apirootList => {
       apirootList.foreach(api => {
-        println("....apirootList api=" + api)
         val cols = Collections(api.api_root, conn)
-        println("....apirootList cols=" + cols)
         // async collections
-        cols.collections() onComplete {
-          case Success(theList) => println("....collections=" + theList + "\n cols.thePath=" + cols.thePath + "\n")
-          case Failure(e) => println(".... test1 Failure result " + e)
-        }
+        cols.collections().map(theList => println("....test1 collections=" + theList + "\n cols.thePath=" + cols.thePath + "\n"))
       })
     })
   }
@@ -40,18 +37,22 @@ object TestApp {
   def test2(): Unit = {
     // a collection endpoint
     val col = new Collection("107", "https://limo.anomali.com/api/v1/taxii2/feeds/", "guest", "guest")
+
+    println("---> test2 col: " + Json.prettyPrint(Json.toJson(col.taxiiCollection)))
+    println("---> test2 col path: " + col.thePath)
+
     // get the objects from the collection
     col.getObjects().map {
       case None => println("---> no bundle in this collection"); System.exit(1)
       case Some(bundle) =>
-        println("---> number of stix: " + bundle.objects.length)
-        println("---> number of indicator: " + bundle.objects.count(_.`type` == Indicator.`type`))
+        println("---> test2 number of stix: " + bundle.objects.length)
+        println("---> test2 number of indicator: " + bundle.objects.count(_.`type` == Indicator.`type`))
         // print all "indicator" objects
         var count = 0
         bundle.objects.foreach(stix => {
           count += 1
-          if (stix.`type` == Indicator.`type`) println("---> stix " + count + ": " + Json.toJson(stix))
-         })
+          if (stix.`type` == Indicator.`type`) println("---> test2 stix " + count + ": " + Json.toJson(stix))
+        })
         // create file to write the stix to
         val bw = new BufferedWriter(new FileWriter(new File("testfile")))
         // write all indicators stix to file
@@ -62,6 +63,7 @@ object TestApp {
         }
         finally {
           bw.close()
+          col.conn.close()
         }
         System.exit(1)
     }
