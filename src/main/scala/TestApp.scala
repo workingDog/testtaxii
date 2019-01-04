@@ -14,7 +14,7 @@ object TestApp {
     // for (SSL) TLS-1.2 in https
     // Security.setProperty("crypto.policy", "unlimiteΩd")
     test1()
-  //  test2()
+    test2()
   }
 
   def test1(): Unit = {
@@ -38,8 +38,7 @@ object TestApp {
     // a collection endpoint
     val col = new Collection("107", "https://limo.anomali.com/api/v1/taxii2/feeds/", "guest", "guest")
 
-    println("---> test2 col: " + Json.prettyPrint(Json.toJson(col.taxiiCollection)))
-    println("---> test2 col path: " + col.thePath)
+    println("---> test2 collection path: " + col.thePath)
 
     // get the objects from the collection
     col.getObjects().map {
@@ -48,11 +47,7 @@ object TestApp {
         println("---> test2 number of stix: " + bundle.objects.length)
         println("---> test2 number of indicator: " + bundle.objects.count(_.`type` == Indicator.`type`))
         // print all "indicator" objects
-        var count = 0
-        bundle.objects.foreach(stix => {
-          count += 1
-          if (stix.`type` == Indicator.`type`) println("---> test2 stix " + count + ": " + Json.toJson(stix))
-        })
+        bundle.objects.foreach(stix => if (stix.`type` == Indicator.`type`) println("---> test2 stix: " + Json.toJson(stix)))
         // create file to write the stix to
         val bw = new BufferedWriter(new FileWriter(new File("testfile")))
         // write all indicators stix to file
