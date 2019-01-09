@@ -19,6 +19,7 @@ object TestApp {
 
   def test1(): Unit = {
     // a connection object with a 10 seconds timeout
+    //   val conn = new TaxiiConnection("https://cti-taxii.mitre.org", "guest", "guest", 10)
     val conn = new TaxiiConnection("https://limo.anomali.com/api/v1/taxii2", "guest", "guest", 10)
     // the server endpoint
     val server = Server("/taxii/", conn)
@@ -36,6 +37,7 @@ object TestApp {
 
   def test2(): Unit = {
     // a collection endpoint
+    //  val col = new Collection("062767bd-02d2-4b72-84ba-56caef0f8658", "https://cti-taxii.mitre.org/stix/", "guest", "guest")
     val col = new Collection("107", "https://limo.anomali.com/api/v1/taxii2/feeds/", "guest", "guest")
 
     println("---> test2 collection path: " + col.thePath)
@@ -49,10 +51,11 @@ object TestApp {
         // print all "indicator" objects
         bundle.objects.foreach(stix => if (stix.`type` == Indicator.`type`) println("---> test2 stix: " + Json.toJson(stix)))
         // create file to write the stix to
-        val bw = new BufferedWriter(new FileWriter(new File("testfile")))
-        // write all indicators stix to file
+        val bw = new BufferedWriter(new FileWriter(new File("testfile.json")))
+        // write the stix to file
         try {
-          bundle.objects.foreach(stix => if (stix.`type` == Indicator.`type`) bw.write(Json.prettyPrint(Json.toJson(stix))))
+          //  bundle.objects.foreach(stix => if (stix.`type` == Indicator.`type`) bw.write(Json.prettyPrint(Json.toJson(stix))))
+          bw.write(Json.prettyPrint(Json.toJson(bundle)))
         } catch {
           case e: Exception => e.printStackTrace()
         }
